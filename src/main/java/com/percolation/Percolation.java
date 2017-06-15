@@ -37,6 +37,7 @@ public class Percolation {
         this.grid = new boolean[n][n];
 
         int nsquare = (int) Math.pow(n, 2);
+
         time = nsquare;
 
         numberOfCalls = 0;
@@ -46,6 +47,8 @@ public class Percolation {
 
         weightedQuickUnionUF = new WeightedQuickUnionUF(nsquare + 2);
 
+//        setVirtualSites(n, virtualTopSite, 1);
+//        setVirtualSites(n, virtualBottomSite, n);
         for (int i = 1; i <= n; i++) {
             increaseTimeAndNumberOfCalls();
             weightedQuickUnionUF.union(virtualTopSite, xyTo1D(1, i));
@@ -58,6 +61,13 @@ public class Percolation {
 
         if (n <= 0) {
             throw new IllegalArgumentException("n should be bigger than 0");
+        }
+    }
+
+    private void setVirtualSites(int n, int virtualSite, int firstCoordinate) {
+        for (int i = 1; i <= n; i++) {
+            increaseTimeAndNumberOfCalls();
+            weightedQuickUnionUF.union(virtualSite, xyTo1D(firstCoordinate, i));
         }
     }
 
@@ -81,43 +91,36 @@ public class Percolation {
         final int convertedCoordinates = xyTo1D(row,col);
         numberOfOpenSites++;
 
-        if (!isOpen(row,col)) {
-            grid[j][i] = true;
-            f1(row, col, convertedCoordinates, n);
-            f1(col, row, convertedCoordinates, n);
-//
-//                if (positionIsInBounds(row-1) && row-1 > 0 && isOpen(row-1, col)) {
-//                    weightedQuickUnionUF.union(convertedCoordinates, xyTo1D(row-1, col));
-//                    increaseTimeAndNumberOfCalls();
-//                }
-//
-//                if (positionIsInBounds(row+1) && row+1 < n && isOpen(row+1, col)) {
-//                    weightedQuickUnionUF.union(convertedCoordinates, xyTo1D(row+1, col));
-//                    increaseTimeAndNumberOfCalls();
-//                }
-//
-//                if (positionIsInBounds(col-1) && col-1 > 0 && isOpen(row, col-1)) {
-//                    weightedQuickUnionUF.union(convertedCoordinates, xyTo1D(row, col-1));
-//                    increaseTimeAndNumberOfCalls();
-//                }
-//
-//                if (positionIsInBounds(col+1) && col+1 < n && isOpen(row, col+1)) {
-//                    weightedQuickUnionUF.union(convertedCoordinates, xyTo1D(row, col+1));
-//                    increaseTimeAndNumberOfCalls();
-//                }
+        if (!percolates()) {
+            if (!isOpen(row,col)) {
+                grid[j][i] = true;
+                openSites(row, col, convertedCoordinates, n);
+            }
         }
     }
 
-    private void f1(int i, int j, int c, int n) {
-        f2(i-1, j, c, n);
-        f2(i+1, j, c, n);
+    private void openSites(int row, int col, int convCoordinates, int n) {
+        validateRow(row-1, col, convCoordinates, n);
+        validateRow(row+1, col, convCoordinates, n);
+        validateColumn(row, col-1, convCoordinates, n);
+        validateColumn(row, col+1, convCoordinates, n);
     }
 
-    private void f2(int i, int j, int c, int n) {
-        if (positionIsInBounds(i) && 0 > i && i < n && isOpen(i, j)) {
-            weightedQuickUnionUF.union(c, xyTo1D(i, j));
-            increaseTimeAndNumberOfCalls();
+    private void validateRow(int row, int col, int convCoordinates, int n) {
+        if (positionIsInBounds(row) && row > 0 && row < n && isOpen(row, col)) {
+            unionAction(row, col, convCoordinates);
         }
+    }
+
+    private void validateColumn(int row, int col, int convCoordinates, int n) {
+        if (positionIsInBounds(col) && col > 0 && col < n && isOpen(row, col)) {
+           unionAction(row, col, convCoordinates);
+        }
+    }
+
+    private void unionAction(int row, int col, int convCoordinates) {
+        weightedQuickUnionUF.union(convCoordinates, xyTo1D(row, col));
+        increaseTimeAndNumberOfCalls();
     }
 
     /**
@@ -139,7 +142,7 @@ public class Percolation {
     public boolean isFull(final int row, final int col) {
         return isOpen(row, col) && weightedQuickUnionUF.connected(xyTo1D(row, col), virtualTopSite);
 
-    };
+    }
 
     /**
      *

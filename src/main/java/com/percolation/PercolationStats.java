@@ -1,68 +1,53 @@
 package com.percolation;
 
-import com.percolation.Percolation;
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
-import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 /**
  * Percolation stats.
  */
 public class PercolationStats {
-    private boolean[][] grid;
-    private final int numberOfCells;
-    private double threshold = 0.0;
-
-    private int numberOfOpenSites;
-
-    private int[] meanArgs;
-    private Percolation percolation;
-    private int trials;
+    private double[] meanArgs;
 
     /**
      *
-     * @param n n.
+     * @param n number n
      * @param trials amount of trials
      */
     public PercolationStats(final int n, final int trials) {
-        this.trials = trials;
-        numberOfCells = (int) Math.pow(n, 2);
-        this.percolation = percolation;
-        percolation = new Percolation(n);
-//        meanArgs = new int[trials];
-//
-//        for (int i = 0; i < trials; i++) {
-//            meanArgs[i] = i;
-//        }
+        int numberOfCells = (int) Math.pow(n, 2);
+        meanArgs = new double[trials];
+
+        for (int j=0; j < trials; j++) {
+            Percolation percolation = new Percolation(n);
+
+            for (int i = 0; i < numberOfCells; i++) {
+                int r = StdRandom.uniform(1, n+1);
+                int c = StdRandom.uniform(1, n+1);
+
+            if (!percolation.percolates() && !percolation.isOpen(r, c)) {
+                    percolation.open(r,c);
+                }
+            }
+            meanArgs[j] = (double) percolation.numberOfOpenSites()/ numberOfCells;
+        }
 
         if (n <= 0 || trials <= 0) {
             throw new IllegalArgumentException("Arguments " + n + " or " + trials + " cannot be smaller than 0");
         }
-
-        grid = new boolean[n][n];
     }
 
     /**
      *
-     * @return
+     * @return mean
      */
     public double mean() {
-        meanArgs = new int[trials];
-
-        for (int i = 0; i < trials; i++) {
-            meanArgs[i] = i;
-        }
         return StdStats.mean(meanArgs);
     }
-
-
-    public int getOpenSites() {
-        return percolation.numberOfOpenSites();
-    }
-
     /**
      *
-     * @return
+     * @return standard deviation
      */
     public double stddev() {
         return StdStats.stddev(meanArgs);
@@ -70,30 +55,26 @@ public class PercolationStats {
 
     /**
      *
-     * @return
+     * @return low level of confidence that the system percolates
      */
     public double confidenceLo() {
-
-        return 0;
+        return mean() - (1.96 * stddev())/Math.sqrt(meanArgs.length);
     }
 
     /**
      *
-     * @return
+     * @return high level of confidence that the system percolates
      */
     public double confidenceHi() {
-
-        return 0;
+        return mean() + (1.96 * stddev())/Math.sqrt(meanArgs.length);
     }
+
 
     public static void main(String[] args) {
-        Percolation percolation = new Percolation(4);
-        PercolationStats percolationStats = new PercolationStats(200, 100);
-
-
-        percolation.open(1,2);
-
-        System.out.println(percolationStats.mean() + " mean");
-//        System.out.println(percolationStats.stddev() + " std dev");
+        PercolationStats percolationStats = new PercolationStats(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+        StdOut.printf("mean                     " + percolationStats.mean());
+        StdOut.printf("stddev                   " + percolationStats.stddev());
+        StdOut.printf("95% confidence interval  " + "[" + percolationStats.confidenceLo() + ", " + percolationStats.confidenceHi() + "]");
     }
+
 }
