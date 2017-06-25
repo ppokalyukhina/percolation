@@ -15,11 +15,25 @@ public class PercolationStats {
     private double[] meanArgs;
 
     /**
+     * stored mean value
+     */
+    private double meanValue;
+
+    /**
+     * standard deviation value
+     */
+    private double stdDev;
+
+    /**
      *
      * @param n number n
      * @param trials amount of trials
      */
     public PercolationStats(final int n, final int trials) {
+        if (n <= 0 || trials <= 0) {
+            throw new IllegalArgumentException("Arguments " + n + " or " + trials + " cannot be smaller than 0");
+        }
+
         int numberOfCells = (int) Math.pow(n, 2);
         meanArgs = new double[trials];
 
@@ -36,10 +50,6 @@ public class PercolationStats {
             }
             meanArgs[j] = (double) percolation.numberOfOpenSites()/ numberOfCells;
         }
-
-        if (n <= 0 || trials <= 0) {
-            throw new IllegalArgumentException("Arguments " + n + " or " + trials + " cannot be smaller than 0");
-        }
     }
 
     /**
@@ -47,14 +57,16 @@ public class PercolationStats {
      * @return double mean
      */
     public double mean() {
-        return StdStats.mean(meanArgs);
+        meanValue = StdStats.mean(meanArgs);
+        return meanValue;
     }
     /**
      *
      * @return double standard deviation
      */
     public double stddev() {
-        return StdStats.stddev(meanArgs);
+        stdDev = StdStats.stddev(meanArgs);
+        return stdDev;
     }
 
     /**
@@ -62,7 +74,7 @@ public class PercolationStats {
      * @return double low level of confidence that the system percolates
      */
     public double confidenceLo() {
-        return mean() - (1.96 * stddev()) / Math.sqrt(meanArgs.length);
+        return meanValue - (1.96 * stdDev) / Math.sqrt(meanArgs.length);
     }
 
     /**
@@ -70,9 +82,8 @@ public class PercolationStats {
      * @return double high level of confidence that the system percolates
      */
     public double confidenceHi() {
-        return mean() + (1.96 * stddev()) / Math.sqrt(meanArgs.length);
+        return meanValue + (1.96 * stdDev) / Math.sqrt(meanArgs.length);
     }
-
 
     public static void main(final String[] args) {
         PercolationStats percolationStats = new PercolationStats(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
