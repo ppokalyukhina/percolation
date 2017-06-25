@@ -8,6 +8,10 @@ import edu.princeton.cs.algs4.StdStats;
  * Percolation stats.
  */
 public class PercolationStats {
+
+    /**
+     * arguments for mean and stddev methods
+     */
     private double[] meanArgs;
 
     /**
@@ -40,14 +44,14 @@ public class PercolationStats {
 
     /**
      *
-     * @return mean
+     * @return double mean
      */
     public double mean() {
         return StdStats.mean(meanArgs);
     }
     /**
      *
-     * @return standard deviation
+     * @return double standard deviation
      */
     public double stddev() {
         return StdStats.stddev(meanArgs);
@@ -55,7 +59,7 @@ public class PercolationStats {
 
     /**
      *
-     * @return low level of confidence that the system percolates
+     * @return double low level of confidence that the system percolates
      */
     public double confidenceLo() {
         return mean() - (1.96 * stddev()) / Math.sqrt(meanArgs.length);
@@ -63,7 +67,7 @@ public class PercolationStats {
 
     /**
      *
-     * @return high level of confidence that the system percolates
+     * @return double high level of confidence that the system percolates
      */
     public double confidenceHi() {
         return mean() + (1.96 * stddev()) / Math.sqrt(meanArgs.length);
