@@ -1,5 +1,3 @@
-package com.percolation;
-
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
@@ -50,6 +48,9 @@ public class PercolationStats {
             }
             meanArgs[j] = (double) percolation.numberOfOpenSites()/ numberOfCells;
         }
+
+       this.meanValue = StdStats.mean(meanArgs);
+       this.stdDev = StdStats.stddev(meanArgs);
     }
 
     /**
@@ -57,16 +58,14 @@ public class PercolationStats {
      * @return double mean
      */
     public double mean() {
-        meanValue = StdStats.mean(meanArgs);
-        return meanValue;
+        return this.meanValue;
     }
     /**
      *
      * @return double standard deviation
      */
     public double stddev() {
-        stdDev = StdStats.stddev(meanArgs);
-        return stdDev;
+        return this.stdDev;
     }
 
     /**
@@ -74,7 +73,7 @@ public class PercolationStats {
      * @return double low level of confidence that the system percolates
      */
     public double confidenceLo() {
-        return meanValue - (1.96 * stdDev) / Math.sqrt(meanArgs.length);
+        return this.meanValue - (1.96 * this.stdDev) / Math.sqrt(this.meanArgs.length);
     }
 
     /**
@@ -82,7 +81,7 @@ public class PercolationStats {
      * @return double high level of confidence that the system percolates
      */
     public double confidenceHi() {
-        return meanValue + (1.96 * stdDev) / Math.sqrt(meanArgs.length);
+        return this.meanValue + (1.96 * this.stdDev) / Math.sqrt(this.meanArgs.length);
     }
 
     public static void main(final String[] args) {
